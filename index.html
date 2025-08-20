@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FundedFlow</title>
+  <meta charset="utf-8" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 24px auto; }
+    input, textarea { margin: 6px 0; padding: 8px; width: 100%; }
+    button { padding: 10px 16px; }
+  </style>
+</head>
+<body>
+  <h2>Log a Trade</h2>
+  <form id="tradeForm">
+    <input id="user_id" type="number" placeholder="User ID" required>
+    <input id="symbol" placeholder="Symbol" required>
+    <input id="pnl" type="number" step="0.01" placeholder="PnL" required>
+    <input id="emotion" placeholder="Emotion">
+    <textarea id="note" placeholder="Notes"></textarea>
+    <button type="submit">Save</button>
+  </form>
+
+  <h3>PnL Chart</h3>
+  <div id="chart" style="width:100%;height:400px;"></div>
+
+  <h3>Coach Tip</h3>
+  <div id="tip" style="margin-top:8px;font-weight:bold;"></div>
+
+<script>
+const form = document.getElementById('tradeForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  await fetch("/save_trade", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      user_id: +user_id.value,
+      symbol: symbol.value,
+      pnl: +pnl.value,
+      emotion: emotion.value || null,
+      note: note.value
+    })
+  });
+  await loadChart();
+  await loadTip();
+});
+
+async function loadChart() {
+  if (!user_id.value) return;
+  const res = await fetch(`/trades/${user_id.value}`);
+  const data = await res.json();
+  const trace = {
+    x: data.map(t => t.created_at),
+    y: data.map(t => t.pnl),
+    type: 'scatter',
+    mode: 'lines+markers'
+  };
+  Plotly.newPlot('chart', [trace]);
+}
+
+async function loadTip() {
+  if (!user_id.value) return;
+  const res = await fetch(`/coach/${user_id.value}`);
+  const json = await res.json();
+  document.getElementById('tip').innerText = json.tip;
+}
+</script>
+</body>
+</html>
