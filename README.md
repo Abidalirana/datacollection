@@ -56,18 +56,14 @@ fundedflow/
 
 
 ==
+==========================================================
 
-
-01--
-run col;ector
+01--for running the collctor files
 python -m data_collector.orchestrator_collector
 or
 python -m ai_project.data_collector.orchestrator_collector
-
-===
-for table creation one time
-python -m ai_project.database.create_db
-python -m ai_project.database.create_db
-
 ===================
+for creation tables at a rute folder...
+python -m ai_project.database.create_db
+============
 
