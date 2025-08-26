@@ -1,12 +1,34 @@
+import os
 from sqlalchemy import create_engine
-from models import Base
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+from .models import Base
 
-# SQLite local DB (you can replace with PostgreSQL)
-DATABASE_URL = "sqlite:///./fundedflow.db"
+load_dotenv()  # load DATABASE_URL from .env
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL environment variable is not set.")
 
-# Create all tables
-Base.metadata.create_all(bind=engine)
+# Remove +asyncpg for sync engine
+sync_db_url = DATABASE_URL.replace("+asyncpg", "")
 
-print("✅ All tables created successfully!")
+# Create synchronous engine
+engine = create_engine(sync_db_url, echo=True)
+
+def create_db():
+    Base.metadata.create_all(engine)
+    print("✅ Database tables created successfully!")
+
+# Session factory
+SessionLocal = sessionmaker(bind=engine)
+
+def get_db_session():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    create_db()

@@ -1,15 +1,19 @@
 # data_collector/emotion_tracker.py
-from datetime import datetime, timedelta
+from ai_project.database.models import Emotion
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 
-async def get_recent_emotions_data(user_id: int, db: AsyncSession, days: int = 3) -> list[dict]:
+async def log_emotion(emotion_data: dict, db: AsyncSession):
     """
-    Get recent emotion logs (tag + intensity) for a user.
+    Log emotion tags per trade asynchronously
     """
-    since = datetime.utcnow() - timedelta(days=days)
-    result = await db.execute(
-        "SELECT tag, intensity FROM emotions WHERE user_id = :uid AND created_at >= :since",
-        {"uid": user_id, "since": since}
+    emotion = Emotion(
+        user_id=emotion_data["user_id"],
+        trade_id=emotion_data.get("trade_id"),
+        emotion=emotion_data.get("emotion"),
+        timestamp=emotion_data.get("timestamp") or datetime.utcnow()
     )
-    emos = result.fetchall()
-    return [{"tag": e.tag, "intensity": e.intensity} for e in emos]
+    db.add(emotion)
+    await db.commit()
+    await db.refresh(emotion)  # optional, to get updated values like id
+    return emotion.id  # return the inserted ID

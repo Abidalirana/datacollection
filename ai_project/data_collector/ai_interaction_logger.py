@@ -1,20 +1,16 @@
 # data_collector/ai_interaction_logger.py
+from ai_project.database.models import SimulatorLog
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
-async def log_ai_interaction(user_id: int, tool_name: str, message: str, db: AsyncSession, meta: dict = None):
+async def log_ai_interaction(ai_data: dict, db: AsyncSession):
     """
-    Log data collection / AI interactions for auditing.
+    Log AI interactions for a user asynchronously
     """
-    await db.execute(
-        "INSERT INTO ai_interactions (user_id, tool_name, message, meta, created_at) "
-        "VALUES (:uid, :tool, :msg, :meta, :time)",
-        {
-            "uid": user_id,
-            "tool": tool_name,
-            "msg": message,
-            "meta": str(meta) if meta else None,
-            "time": datetime.utcnow()
-        }
+    log_entry = SimulatorLog(
+        user_id=ai_data["user_id"],
+        action=ai_data.get("action"),
+        timestamp=ai_data.get("timestamp") or datetime.utcnow()
     )
+    db.add(log_entry)
     await db.commit()

@@ -1,28 +1,37 @@
 # data_collector/orchestrator_collector.py
-from __future__ import annotations
-from .sqlalchemy.ext.asyncio import AsyncSession
-from .user_profile import get_user_profile_data
-from .trade_data import get_recent_trades_data
-from .emotion_tracker import get_recent_emotions_data
-from .engagement_logger import get_feature_usage_data
-from .ai_interaction_logger import log_ai_interaction
+from ai_project.data_collector.user_profile import log_user_profile
+from ai_project.data_collector.trade_data import log_trade
+from ai_project.data_collector.emotion_tracker import log_emotion
+from ai_project.data_collector.journal_logger import log_journal
+from ai_project.data_collector.ai_interaction_logger import log_ai_interaction
+from sqlalchemy.ext.asyncio import AsyncSession
 
-async def collect_user_data(user_id: int, db: AsyncSession) -> dict:
+
+async def run_data_collection(sample_data: dict, db: AsyncSession):
     """
-    Collect all user-related data from database.
+    Async orchestrator for anonymous data collection
     """
-    user_profile = await get_user_profile_data(user_id, db)  # Demographics & account
-    trades = await get_recent_trades_data(user_id, db)
-    emotions = await get_recent_emotions_data(user_id, db)
-    engagement = await get_feature_usage_data(user_id, db)
+    # 1️⃣ User profile (anonymous)
+    user_id = await log_user_profile(sample_data.get("user", {}), db)
 
-    context = {
-        "user_profile": user_profile,
-        "trades": trades,
-        "emotions": emotions,
-        "engagement": engagement
-    }
+    # 2️⃣ Trades
+    for trade in sample_data.get("trades", []):
+        trade["user_id"] = user_id
+        await log_trade(trade, db)
 
-    # Optional: log that we collected data
-    await log_ai_interaction(user_id, "data_collector", "Collected user data successfully.", db, meta=context)
-    return context
+    # 3️⃣ Emotions
+    for emotion in sample_data.get("emotions", []):
+        emotion["user_id"] = user_id
+        await log_emotion(emotion, db)
+
+    # 4️⃣ Journals
+    for journal in sample_data.get("journals", []):
+        journal["user_id"] = user_id
+        await log_journal(journal, db)
+
+    # 5️⃣ AI interactions
+    for ai_data in sample_data.get("ai_interactions", []):
+        ai_data["user_id"] = user_id
+        await log_ai_interaction(ai_data, db)
+
+    return user_id

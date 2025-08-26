@@ -1,53 +1,73 @@
-PROJECT 04:
 
-fundedflow/                  ← Your main project folder
-└── my_ai_project/           ← All project code lives here
-    │── main.py              # Entry point / orchestrator
-    │── requirements.txt     # Python dependencies
-    │── config.py            # API keys, DB settings
+
+fundedflow/
+└── my_ai_project/
+    │── main.py                 # Entry point: orchestrator for data collection + agents
+    │── requirements.txt        # Python dependencies
+    │── config.py               # DB and API keys
     │── README.md
     │── .env
     │── .gitignore
     │
-    ├── workflow/
+    ├── database/
     │   ├── __init__.py
-    │   ├── pipeline.py      # Collector → DB → embeddings → LLM → agents
-    │   └── utils.py         # Logging, helpers
+    │   ├── models.py           # DB tables: users, trades, emotions, journals, etc.
+    │   └── create_db.py        # Initialize DB
     │
     ├── data_collector/
     │   ├── __init__.py
-    │   ├── orchestrator_collector.py
+    │   ├── orchestrator_collector.py  # Orchestrator for all data collection modules
     │   ├── user_profile.py
     │   ├── emotion_tracker.py
     │   ├── trade_data.py
     │   ├── engagement_logger.py
+    │   ├── journal_logger.py
     │   └── ai_interaction_logger.py
     │
-    ├── database/
-    │   └── models.py     # DB connection + tables
-    │   |--- __init__.py   
-        |--create_db.py  
     ├── llm/
     │   ├── __init__.py
-    │   ├── llm_client.py
-    │   ├── embedding_client.py
+    │   ├── llm_client.py             # OpenAI / GPT client
+    │   ├── embedding_client.py       # Pinecone / Weaviate
     │   ├── prompt_templates.py
-    │   └── orchestrator_llm.py
+    │   └── orchestrator_llm.py      # Orchestrator for embeddings + prompts
     │
-    └── myagents/
+    └── agents/
         ├── __init__.py
         ├── mindset_coach_agent.py
         ├── trade_therapist_agent.py
         ├── recovery_planner_agent.py
         ├── risk_manager_agent.py
         ├── onboarding_coach_agent.py
-        └── propfirm_intelligence_agent.py
-        |-----orchestrator.py
+        ├── propfirm_intelligence_agent.py
+        └── orchestrator.py          # Orchestrator for all agents
+==============================================================================================================================================================================================================================
 
 
 
 
 
-====================================================================================
 
+
+
+
+
+
+
+
+
+==
+
+
+01--
+run col;ector
+python -m data_collector.orchestrator_collector
+or
+python -m ai_project.data_collector.orchestrator_collector
+
+===
+for table creation one time
+python -m ai_project.database.create_db
+python -m ai_project.database.create_db
+
+===================
 

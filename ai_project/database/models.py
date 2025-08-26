@@ -16,7 +16,7 @@ class User(Base):
     # relationships
     sessions = relationship("Session", back_populates="user")
     trades = relationship("Trade", back_populates="user")
-    journals = relationship("Journal", back_populates="user")
+    journals = relationship("Journal", back_populates="user") 
     emotions = relationship("Emotion", back_populates="user")
     reset_challenges = relationship("ResetChallenge", back_populates="user")
     feature_usages = relationship("FeatureUsage", back_populates="user")
