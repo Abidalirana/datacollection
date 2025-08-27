@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FundedFlow - Data Logger</title>
+</head>
+<body>
+  <h1>FundedFlow 🚀</h1>
+
+  <button onclick="sendData()">Send Sample Data</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function sendData() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/log-data/", {   // ✅ local FastAPI server
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: { age: 30, location: "PK", account_type: "FTMO", funded_status: "demo" },
+            sessions: [{ start_time: null, end_time: null }],
+            trades: [{ instrument: "US30", strategy: "scalping", entry_time: null, exit_time: null, outcome: "win", risk_reward_ratio: 2.0, max_drawdown: 50 }],
+            emotions: [{ emotion: "confidence", timestamp: null }],
+            journals: [{ content: "Feeling good", confidence_score: 0.8, created_at: null }],
+            ai_interactions: [{ action: "asked_risk", timestamp: null }],
+            reset_challenges: [{ completion_percentage: 50, start_time: null, end_time: null }],
+            feature_usages: [{ feature_name: "risk_tracker", usage_count: 1 }],
+            recovery_plans: [{ plan_details: "Follow reset plan A", completed: false }],
+            rulebook_votes: [{ rule_name: "Max Trade Limit", vote: true }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP error! Status: " + response.status);
+        }
+
+        const result = await response.json();
+        document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        console.error("Error logging user data:", error);
+        document.getElementById("output").textContent = "Error: " + error;
+      }
+    }
+  </script>
+</body>
+</html>
