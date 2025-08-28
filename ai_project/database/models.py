@@ -135,3 +135,29 @@ class MLPrediction(Base):
 
     user = relationship("User")
     trade = relationship("Trade")
+
+
+# Processed Features Table (preprocessing output)
+class ProcessedFeature(Base):
+    __tablename__ = "processed_features"  # table for storing preprocessed data
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    trade_id = Column(Integer, ForeignKey("trades.id"), nullable=True)
+
+    # Core features
+    risk_reward_ratio = Column(Float)
+    max_drawdown = Column(Float)
+    outcome_encoded = Column(Integer)
+    journal_length = Column(Integer)
+
+    # Example strategy/instrument flags
+    instr_US30 = Column(Boolean)
+    strategy_scalping = Column(Boolean)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User")
+    trade = relationship("Trade")
+

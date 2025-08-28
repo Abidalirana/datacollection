@@ -83,12 +83,16 @@ cd D:\datacollectionfundedflow\ai_project
 python -m database.create_db
 or
 python -m ai_project.database.create_db
+python -m ai_project.database.create_db
+
 ======================
 04-- processor
 cd D:\datacollectionfundedflow\ai_project
 
+python -m ai_project.data_processing.run_preprocess
+
  PS D:\datacollectionfundedflow\ai_project\data_processing> uv run run_preprocess.py
  ============================================
 
- 
+
 

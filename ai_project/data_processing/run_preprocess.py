@@ -4,15 +4,18 @@ import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-from preprocess import load_tables, preprocess_data, merge_tables
-from feature_engineering import generate_features
-from eda import (
+# Import from correct package paths
+from ai_project.data_processing.preprocess import load_tables, preprocess_data, merge_tables
+from ai_project.data_processing.feature_engineering import generate_features
+from ai_project.data_processing.eda import (
     summary_statistics,
     plot_trade_outcomes,
     plot_trade_duration,
     plot_emotions,
     plot_correlation_matrix,
 )
+from ai_project.database.save_features import save_features
+
 
 # ==============================
 # Setup Paths
@@ -82,7 +85,7 @@ def run_full_pipeline(run_eda: bool = False, save_file: bool = True, save_eda: b
 
         print("📈 EDA completed and plots saved!")
 
-    # Save processed data
+    # Save processed data to CSV
     if save_file:
         features.to_csv(PROCESSED_PATH, index=False)
         print(f"💾 Processed features saved → {PROCESSED_PATH}")
@@ -91,7 +94,11 @@ def run_full_pipeline(run_eda: bool = False, save_file: bool = True, save_eda: b
 
 
 if __name__ == "__main__":
+    # Run the full pipeline
     features = run_full_pipeline(run_eda=True, save_file=True, save_eda=True)
+
+    # Save features to database
+    save_features(features)
 
     print("\n🔎 First 5 rows of final feature-engineered data:")
     print(features.head())
