@@ -14,9 +14,11 @@ engine = create_engine(sync_db_url)
 
 def load_tables():
     """Load all DB tables into Pandas DataFrames"""
-    tables = ["users", "sessions", "trades", "emotions", "journals",
-              "simulator_logs", "reset_challenges", "feature_usage",
-              "recovery_plans", "rulebook_votes"]
+    tables = [
+        "users", "sessions", "trades", "emotions", "journals",
+        "simulator_logs", "reset_challenges", "feature_usage",
+        "recovery_plans", "rulebook_votes"
+    ]
 
     dataframes = {}
     for table in tables:
@@ -31,28 +33,32 @@ def preprocess_data(dfs: dict):
     """
     # Fill missing exit_time in trades
     if "trades" in dfs:
-        dfs["trades"]["exit_time"] = pd.to_datetime(dfs["trades"]["exit_time"])
-        dfs["trades"]["entry_time"] = pd.to_datetime(dfs["trades"]["entry_time"])
-        dfs["trades"]["exit_time"] = dfs["trades"]["exit_time"].fillna(dfs["trades"]["entry_time"])
+        trades = dfs["trades"].copy()
+        trades["exit_time"] = pd.to_datetime(trades["exit_time"])
+        trades["entry_time"] = pd.to_datetime(trades["entry_time"])
+        trades["exit_time"] = trades["exit_time"].fillna(trades["entry_time"])
+        dfs["trades"] = trades
 
     # Fill missing emotions
     if "emotions" in dfs:
-        dfs["emotions"]["emotion"] = dfs["emotions"]["emotion"].fillna("neutral")
-        dfs["emotions"]["timestamp"] = pd.to_datetime(dfs["emotions"]["timestamp"])
+        emotions = dfs["emotions"].copy()
+        emotions["emotion"] = emotions["emotion"].fillna("neutral")
+        emotions["timestamp"] = pd.to_datetime(emotions["timestamp"])
         # Ensure trade_id is numeric (handle NaNs safely)
-        dfs["emotions"]["trade_id"] = dfs["emotions"]["trade_id"].fillna(-1).astype(int)
+        emotions["trade_id"] = emotions["trade_id"].fillna(-1).astype(int)
+        dfs["emotions"] = emotions
 
-    # Add more preprocessing per table if needed
     return dfs
 
+
 def merge_tables(dfs: dict):
-    trades = dfs["trades"]
-    emotions = dfs["emotions"]
-    journals = dfs["journals"]
+    trades = dfs["trades"].copy()
+    emotions = dfs["emotions"].copy()
+    journals = dfs["journals"].copy()
 
     # Ensure merge keys have the same type
     trades["id"] = trades["id"].astype(int)
-    
+
     # Ensure trade_id is int and remove invalid rows
     valid_emotions = emotions[emotions["trade_id"].notna()].copy()
     valid_emotions["trade_id"] = valid_emotions["trade_id"].astype(int)
@@ -71,7 +77,6 @@ def merge_tables(dfs: dict):
     ml_data = pd.merge(trades_emotions, journals, on="user_id", how="left")
 
     return ml_data
-
 
 
 if __name__ == "__main__":

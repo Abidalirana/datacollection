@@ -10,13 +10,13 @@ def add_trade_features(df: pd.DataFrame) -> pd.DataFrame:
     df["trade_duration"] = (df["exit_time"] - df["entry_time"]).dt.total_seconds()
 
     # 2️⃣ Risk/Reward ratio (fill missing with 1)
-    df["risk_reward_ratio"].fillna(1.0, inplace=True)
+    df["risk_reward_ratio"] = df["risk_reward_ratio"].fillna(1.0)
 
     # 3️⃣ Max drawdown (fill missing with 0)
-    df["max_drawdown"].fillna(0.0, inplace=True)
+    df["max_drawdown"] = df["max_drawdown"].fillna(0.0)
 
     # 4️⃣ Encode outcome: win=1, loss=0
-    df["outcome_encoded"] = df["outcome"].map({"win": 1, "loss": 0}).fillna(0)
+    df["outcome_encoded"] = df["outcome"].map({"win": 1, "loss": 0}).fillna(0).astype(int)
 
     return df
 
@@ -25,9 +25,9 @@ def add_emotion_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Convert emotions to numeric features
     """
-    # One-hot encode emotion column
-    emotion_dummies = pd.get_dummies(df["emotion"], prefix="emotion")
-    df = pd.concat([df, emotion_dummies], axis=1)
+    if "emotion" in df.columns:
+        emotion_dummies = pd.get_dummies(df["emotion"], prefix="emotion")
+        df = pd.concat([df, emotion_dummies], axis=1)
 
     return df
 
@@ -36,11 +36,13 @@ def add_journal_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create features from journal text and confidence_score
     """
-    # Fill missing confidence scores
-    df["confidence_score"].fillna(df["confidence_score"].mean(), inplace=True)
+    if "confidence_score" in df.columns:
+        mean_conf = df["confidence_score"].mean()
+        df["confidence_score"] = df["confidence_score"].fillna(mean_conf)
 
     # Example: journal length feature
-    df["journal_length"] = df["content"].apply(lambda x: len(str(x).split()))
+    if "content" in df.columns:
+        df["journal_length"] = df["content"].apply(lambda x: len(str(x).split()))
 
     return df
 
@@ -73,13 +75,12 @@ def generate_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Drop columns not needed for ML
     drop_cols = ["content", "emotion", "instrument", "strategy", "outcome", "entry_time", "exit_time"]
-    df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+    df = df.drop(columns=[c for c in drop_cols if c in df.columns], errors="ignore")
 
     return df
 
 
 if __name__ == "__main__":
-    # Example usage
     from preprocess import load_tables, preprocess_data, merge_tables
 
     dfs = load_tables()
