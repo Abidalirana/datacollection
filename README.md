@@ -65,33 +65,22 @@ run the collctor files
 python -m data_collector.orchestrator_collector
 or
 python -m ai_project.data_collector.orchestrator_collector
-===================
-===================================================
+
 02----
-run ml-modelss here is a way ----
+run ml-modelss 
 
 cd D:\datacollectionfundedflow
 python -m ai_project.ml_models.ml_orchestrator
 
-=================
 03--
 run db 
-# Go to ai_project folder
-cd D:\datacollectionfundedflow\ai_project
-
-# Run create_db as a module
-python -m database.create_db
-or
-python -m ai_project.database.create_db
+cd D:\datacollectionfundedflow
 python -m ai_project.database.create_db
 
-======================
-04-- processor
-cd D:\datacollectionfundedflow\ai_project
+04-- processor HOW to Run....
+cd D:\datacollectionfundedflow
 
 python -m ai_project.data_processing.run_preprocess
-
- PS D:\datacollectionfundedflow\ai_project\data_processing> uv run run_preprocess.py
  ============================================
 
 

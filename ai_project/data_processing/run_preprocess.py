@@ -86,9 +86,9 @@ def run_full_pipeline(run_eda: bool = False, save_file: bool = True, save_eda: b
         print("📈 EDA completed and plots saved!")
 
     # Save processed data to CSV
-    if save_file:
-        features.to_csv(PROCESSED_PATH, index=False)
-        print(f"💾 Processed features saved → {PROCESSED_PATH}")
+    #if save_file:
+     #   features.to_csv(PROCESSED_PATH, index=False)
+     #   print(f"💾 Processed features saved → {PROCESSED_PATH}")
 
     return features
 
