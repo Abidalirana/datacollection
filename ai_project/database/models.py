@@ -121,3 +121,17 @@ class SimulatorLog(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="simulator_logs")
+
+# ML Predictions Table
+class MLPrediction(Base):
+    __tablename__ = "ml_predictions"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # if prediction tied to user
+    trade_id = Column(Integer, ForeignKey("trades.id"), nullable=True)
+    model_name = Column(String)  # e.g., "tilt_predictor"
+    model_version = Column(String)
+    prediction = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+    trade = relationship("Trade")

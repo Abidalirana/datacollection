@@ -7,7 +7,8 @@ fundedflow/
 │── requirements.txt         # Install all Python dependencies
 │── database/
 │   ├── models.py            # Define all DB tables: users, trades, emotions, journals, etc.
-│   └── create_db.py         # Initialize DB tables (run once)
+│   └── create_db.py          # Initialize DB tables (run once)
+    |--save_prediction.py   # <-- your save_prediction() function here         
 
 # Step 2: Data Collection
 ├── data_collector/
@@ -35,8 +36,9 @@ fundedflow/
 └── ml_models/
     ├── tilt_predictor.py           # ML model: tilt/risk prediction (# Step 4a)
     ├── recovery_agent.py           # ML model: suggest recovery plans (# Step 4b)
-    └── clustering.py               # Discover patterns (# Step 4c)
-
+    └── clustering.py               ## Discover patterns (# Step 4c)
+    |--- ml_orchestrator.py
+                    
 # Step 5: LLM & Embeddings
 ├── llm/
 │   ├── llm_client.py               # GPT/LLM queries (# Step 5a)
@@ -58,21 +60,35 @@ fundedflow/
 =================================================================================================================
 
 =================================================================================================================
-
-01--for running the collctor files
+01----
+run the collctor files
 python -m data_collector.orchestrator_collector
 or
 python -m ai_project.data_collector.orchestrator_collector
 ===================
-for creation tables at a rute folder...
-python -m ai_project.database.create_db
 ===================================================
+02----
 run ml-modelss here is a way ----
 
 cd D:\datacollectionfundedflow
 python -m ai_project.ml_models.ml_orchestrator
 
 =================
+03--
+run db 
+# Go to ai_project folder
+cd D:\datacollectionfundedflow\ai_project
 
+# Run create_db as a module
+python -m database.create_db
+or
+python -m ai_project.database.create_db
+======================
+04-- processor
+cd D:\datacollectionfundedflow\ai_project
 
+ PS D:\datacollectionfundedflow\ai_project\data_processing> uv run run_preprocess.py
+ ============================================
+
+ 
 
