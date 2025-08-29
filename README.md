@@ -6,6 +6,7 @@ fundedflow/
 │── .env                     # Store DATABASE_URL, API keys
 │── config.py                # Config variables (DB, API keys, constants)
 │── requirements.txt         # Install all Python dependencies
+|---  run_pipeline           #run the all pipeline seqently 
 │── database/
 │   ├── models.py            # Define all DB tables: users, trades, emotions, journals, etc.
 │   └── create_db.py          # Initialize DB tables (run once)
@@ -50,6 +51,14 @@ fundedflow/
 │   ├──  embedding_retrieval.py
 │   ├──  embedding_ingest.py
 
+# Step 6: LLM Agent
+llm/
+│── my_agent.py         # your FundedFlow assistant (all agent logic here)
+│── llm_orchestrator.py # orchestrates ML outputs + LLM explanations
+│── config.py           # handles API keys and LLM client setup
+│── __init__.py
+
+
 
 
 
@@ -92,8 +101,15 @@ run db
 cd D:\datacollectionfundedflow
 python -m ai_project.database.create_db
 
-
-========================================================================
-embedding
+05-  embedding
 python embedding_ingest.py
 uv run embedding_ingest.py
+ PS D:\datacollectionfundedflow\ai_project\embedding> uv run embedding_ingest.py
+
+
+06 -- run-pipeline 
+PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last 10 trades"
+
+
+
+====
