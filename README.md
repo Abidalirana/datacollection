@@ -1,6 +1,7 @@
 fundedflow/
 └── my_ai_project/
 
+
 # Step 1: Setup & DB
 │── .env                     # Store DATABASE_URL, API keys
 │── config.py                # Config variables (DB, API keys, constants)
@@ -8,7 +9,9 @@ fundedflow/
 │── database/
 │   ├── models.py            # Define all DB tables: users, trades, emotions, journals, etc.
 │   └── create_db.py          # Initialize DB tables (run once)
-    |--save_prediction.py   # <-- your save_prediction() function here         
+    |--save_prediction.py   # <-- your save_prediction() function here  
+    |--- save_features.py    # save ml features here      
+
 
 # Step 2: Data Collection
 ├── data_collector/
@@ -25,12 +28,14 @@ fundedflow/
 │   ├── recovery_plans_logger.py
 │   └── rulebook_votes_logger.py
 
+
 # Step 3: Preprocessing & Feature Engineering
 ├── data_processing/
 │   ├── preprocess.py               # Clean, join tables, handle missing values (# Step 3a)
 │   ├── feature_engineering.py      # Create ML features (# Step 3b)
 │   └── eda.py                       # Explore data distributions, plots (# Step 3c)
-|   |--- run_preprocess.py            # run the full flow full pipeline 
+|   |--- run_preprocess.py            # run the full flow full pipeline
+
 
 # Step 4: ML & Prediction
 └── ml_models/
@@ -38,13 +43,17 @@ fundedflow/
     ├── recovery_agent.py           # ML model: suggest recovery plans (# Step 4b)
     └── clustering.py               ## Discover patterns (# Step 4c)
     |--- ml_orchestrator.py
-                    
-# Step 5: LLM & Embeddings
-├── llm/
-│   ├── llm_client.py               # GPT/LLM queries (# Step 5a)
-│   ├── embedding_client.py         # Generate embeddings (# Step 5b)
-│   ├── prompt_templates.py         # Predefined prompts (# Step 5c)
-│   └── orchestrator_llm.py        # Orchestrator for embeddings + prompts (# Step 5d)
+    |----  retrieval_service.py
+                   
+# Step 5: Embeddings
+├── embedding/
+│   ├──  embedding_retrieval.py
+│   ├──  embedding_ingest.py
+
+
+
+
+======================================================================
 
 # Step 6: Agents
 ├── agents/
@@ -61,27 +70,30 @@ fundedflow/
 
 =================================================================================================================
 01----
-run the collctor files
-python -m data_collector.orchestrator_collector
-or
+run the collctor 
+
 python -m ai_project.data_collector.orchestrator_collector
 
-02----
+
+02-- processor HOW to Run....
+cd D:\datacollectionfundedflow
+
+python -m ai_project.data_processing.run_preprocess
+
+
+03----
 run ml-modelss 
 
 cd D:\datacollectionfundedflow
 python -m ai_project.ml_models.ml_orchestrator
 
-03--
+04--
 run db 
 cd D:\datacollectionfundedflow
 python -m ai_project.database.create_db
 
-04-- processor HOW to Run....
-cd D:\datacollectionfundedflow
 
-python -m ai_project.data_processing.run_preprocess
- ============================================
-
-
-
+========================================================================
+embedding
+python embedding_ingest.py
+uv run embedding_ingest.py

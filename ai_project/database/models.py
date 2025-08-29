@@ -161,3 +161,20 @@ class ProcessedFeature(Base):
     user = relationship("User")
     trade = relationship("Trade")
 
+
+
+# ------------------------------
+# Embedding Store Table for Chroma
+# ------------------------------
+
+class EmbeddingStore(Base):
+    __tablename__ = "embeddings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    source_type = Column(String)   # e.g., "journal", "trade", "note"
+    source_id = Column(Integer)    # id of the trade/journal/etc.
+    content = Column(Text, nullable=False)  # original text
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
