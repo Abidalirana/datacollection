@@ -1,4 +1,4 @@
-# embedding_ingest.py (fixed with mappings())
+# embedding_ingest.py (fixed for persistence)
 
 import sys
 import os
@@ -16,7 +16,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from database.models import User, Journal, Trade
 from sentence_transformers import SentenceTransformer
-from chromadb import Client
+from chromadb import PersistentClient  # ✅ use PersistentClient
 
 # -------------------------------
 # Initialize HF embedding model
@@ -24,9 +24,9 @@ from chromadb import Client
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 # -------------------------------
-# Initialize Chroma DB (new style)
+# Initialize Chroma DB (persistent)
 # -------------------------------
-chroma_client = Client()
+chroma_client = PersistentClient(path="./chroma_db")  # ✅ persistent path
 collection = chroma_client.get_or_create_collection(name="embeddings")
 
 # -------------------------------
@@ -62,7 +62,7 @@ async def ingest_embedding(user_id: int, source_type: str, source_id: int, conte
 async def ingest_all_journals():
     async with SessionLocal() as session:
         result = await session.execute(text("SELECT * FROM journals"))
-        journals = result.mappings().all()  # ✅ changed here
+        journals = result.mappings().all()
         for j in journals:
             await ingest_embedding(
                 user_id=j["user_id"],
@@ -77,7 +77,7 @@ async def ingest_all_journals():
 async def ingest_all_trades():
     async with SessionLocal() as session:
         result = await session.execute(text("SELECT * FROM trades"))
-        trades = result.mappings().all()  # ✅ changed here
+        trades = result.mappings().all()
         for t in trades:
             text_content = f"{t['strategy']} {t['instrument']}"
             await ingest_embedding(
