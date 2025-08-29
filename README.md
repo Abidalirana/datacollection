@@ -51,7 +51,7 @@ fundedflow/
 │   ├──  embedding_retrieval.py
 │   ├──  embedding_ingest.py
 
-# Step 6: LLM Agent
+# Step 6: llm_agent
 llm/
 │── my_agent.py         # your FundedFlow assistant (all agent logic here)
 │── llm_orchestrator.py # orchestrates ML outputs + LLM explanations

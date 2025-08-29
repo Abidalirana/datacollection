@@ -1,8 +1,10 @@
 import asyncio
 from .config import client, MODEL_NAME
+from ai_project.embedding.embedding_retrieval import query_embeddings
+
 from agents import Agent, Runner, OpenAIChatCompletionsModel, function_tool, set_tracing_disabled
 
-# Disable tracing if you want
+# Disable tracing if not needed
 set_tracing_disabled(disabled=True)
 
 # Formatter for dot-style responses
@@ -20,35 +22,15 @@ class DotFormatter:
             f"Benefits: {benefits}"
         ])
 
-# FundedFlow modules
-MODULES_DATA = {
-    "7-day reset challenge": {"purpose": "Helps reset mindset after tough trading patches",
-                              "how_to_use": "Follow daily prompts for 7 days",
-                              "benefits": "Builds mental strength & focus"},
-    "risk tracker": {"purpose": "Track risk habits & trading patterns",
-                     "how_to_use": "Log trades, emotions & analyze",
-                     "benefits": "Improves discipline & consistency"},
-    "trading journal": {"purpose": "Reflect on trades",
-                        "how_to_use": "Log trades & review patterns",
-                        "benefits": "Boosts decision-making & self-awareness"},
-    "recovery plan generator": {"purpose": "Create personalized improvement plans",
-                                "how_to_use": "Generates PDF reports",
-                                "benefits": "Clear next steps & growth"},
-    "loyalty program": {"purpose": "Rewards consistent discipline",
-                        "how_to_use": "Earn points & unlock perks",
-                        "benefits": "Keeps you motivated"},
-    "trading simulator": {"purpose": "Practice strategies risk-free",
-                          "how_to_use": "Simulate trades & analyze results",
-                          "benefits": "Sharpen skills & confidence"},
-}
-
 # Tools
 @function_tool
 def get_fundedflow_module_info(module_name: str) -> str:
-    module = MODULES_DATA.get(module_name.lower())
+    # Dynamically query modules from DB or config if needed
+    modules = query_embeddings("modules")  # <-- This should return a dict like MODULES_DATA
+    module = modules.get(module_name.lower())
     if not module:
         return DotFormatter.format_list([
-            f"I only know these modules: {', '.join(MODULES_DATA.keys())}",
+            f"I only know these modules: {', '.join(modules.keys())}",
             "Pick one!"
         ])
     return DotFormatter.format_module(
@@ -73,8 +55,9 @@ def get_fundedflow_overview() -> str:
 
 @function_tool
 def list_fundedflow_modules() -> str:
+    modules = query_embeddings("modules")  # Fetch all module names dynamically
     return DotFormatter.format_list(
-        ["Modules available:"] + list(MODULES_DATA.keys())
+        ["Modules available:"] + list(modules.keys())
     )
 
 # Agent setup
@@ -94,6 +77,9 @@ agent = Agent(
 
 # Runner
 async def run_my_agent(user_query: str) -> str:
+    # Retrieve relevant embeddings first
+    results = query_embeddings(user_query)  # returns relevant journals/trades
+    # Optionally, you can feed `results` as context to the agent
     result = await Runner.run(agent, user_query)
     return result.final_output
 
