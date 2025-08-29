@@ -111,5 +111,8 @@ uv run embedding_ingest.py
 PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last sad trades trades"
 
 
+07 
+ python insert_dummy_data.py
 
+ 
 ====

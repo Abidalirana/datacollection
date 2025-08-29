@@ -35,3 +35,24 @@ async def get_session() -> AsyncSession:
 async def log_user_data(data: dict, session: AsyncSession = Depends(get_session)):
     user_id = await run_data_collection(data, session)
     return {"message": "Data logged successfully", "user_id": user_id}
+
+
+# =========================
+# ✅ New endpoint: Ask RAG AI
+# =========================
+from run_pipeline import run_agent_with_query
+@app.post("/ask/")
+async def ask_ai(query: dict):
+    """
+    Example JSON payload: {"query": "show my last 10 trades"}
+    """
+    user_query = query.get("query")
+    if not user_query:
+        return {"error": "Query field is required"}
+    
+    response = await run_agent_with_query(user_query)
+    return {"answer": response}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
