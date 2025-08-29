@@ -108,7 +108,7 @@ uv run embedding_ingest.py
 
 
 06 -- run-pipeline 
-PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last 10 trades"
+PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last sad trades trades"
 
 
 
