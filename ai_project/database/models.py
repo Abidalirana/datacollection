@@ -178,3 +178,20 @@ class EmbeddingStore(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User")
+
+# ------------------------------
+# System / Debug Logs
+# ------------------------------
+
+class SystemLog(Base):
+    __tablename__ = "system_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # optional (some logs may not be tied to a user)
+    level = Column(String, default="INFO")     # INFO, WARNING, ERROR
+    module = Column(String)                    # e.g., "pipeline", "ml_agent", "journal"
+    message = Column(Text, nullable=False)     # full log/error message
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User")
