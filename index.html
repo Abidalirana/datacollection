@@ -3,43 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FundedFlow - Data Logger</title>
+  <title>FundedFlow - Data Logger & AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #1a73e8; }
+    .mode { margin-bottom: 20px; font-weight: bold; color: green; }
+    button { margin: 10px 0; padding: 10px 20px; cursor: pointer; }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+    input { padding: 8px; width: 300px; margin-right: 10px; }
+    pre { background: #f4f4f4; padding: 15px; border-radius: 5px; white-space: pre-wrap; }
+  </style>
 </head>
 <body>
   <h1>FundedFlow 🚀</h1>
+  <div id="modeDisplay" class="mode">Mode: ONLINE (using production API)</div>
 
-  <button onclick="sendData()">Send Sample Data</button>
-  <pre id="output"></pre>
+  <!-- Log Data Section -->
+  <h2>1️⃣ Log Sample Data</h2>
+  <button id="sendBtn" onclick="sendData()">Send Sample Data</button>
+  <pre id="logOutput"></pre>
+
+  <!-- Ask AI Section -->
+  <h2>2️⃣ Ask AI</h2>
+  <input type="text" id="userQuery" placeholder="Ask AI..." />
+  <button id="askBtn" onclick="askAI()">Ask</button>
+  <pre id="aiOutput"></pre>
 
   <script>
+    const API_BASE = "https://api.fundedflow.app";
+
+    const sendBtn = document.getElementById("sendBtn");
+    const askBtn = document.getElementById("askBtn");
+    const askInput = document.getElementById("userQuery");
+
+    // =========================
+    // Send Sample Data
+    // =========================
     async function sendData() {
+      sendBtn.disabled = true;
+      document.getElementById("logOutput").textContent = "⏳ Sending data...";
+
+      const payload = {
+        user: { age: 30, location: "PK", account_type: "FTMO", funded_status: "demo" },
+        sessions: [{ start_time: new Date().toISOString(), end_time: null }],
+        trades: [{ instrument: "US30", strategy: "scalping", entry_time: null, exit_time: null, outcome: "win", risk_reward_ratio: 2.0, max_drawdown: 50 }],
+        emotions: [{ emotion: "confidence", timestamp: new Date().toISOString() }],
+        journals: [{ content: "Feeling good", confidence_score: 0.8, created_at: new Date().toISOString() }],
+        ai_interactions: [{ action: "asked_risk", timestamp: new Date().toISOString() }],
+        reset_challenges: [{ completion_percentage: 50, start_time: null, end_time: null }],
+        feature_usages: [{ feature_name: "risk_tracker", usage_count: 1 }],
+        recovery_plans: [{ plan_details: "Follow reset plan A", completed: false }],
+        rulebook_votes: [{ rule_name: "Max Trade Limit", vote: true }]
+      };
+
       try {
-        const response = await fetch("http://127.0.0.1:8000/log-data/", {   // ✅ local FastAPI server
+        const response = await fetch(`${API_BASE}/log-data/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user: { age: 30, location: "PK", account_type: "FTMO", funded_status: "demo" },
-            sessions: [{ start_time: null, end_time: null }],
-            trades: [{ instrument: "US30", strategy: "scalping", entry_time: null, exit_time: null, outcome: "win", risk_reward_ratio: 2.0, max_drawdown: 50 }],
-            emotions: [{ emotion: "confidence", timestamp: null }],
-            journals: [{ content: "Feeling good", confidence_score: 0.8, created_at: null }],
-            ai_interactions: [{ action: "asked_risk", timestamp: null }],
-            reset_challenges: [{ completion_percentage: 50, start_time: null, end_time: null }],
-            feature_usages: [{ feature_name: "risk_tracker", usage_count: 1 }],
-            recovery_plans: [{ plan_details: "Follow reset plan A", completed: false }],
-            rulebook_votes: [{ rule_name: "Max Trade Limit", vote: true }]
-          })
+          body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-          throw new Error("HTTP error! Status: " + response.status);
-        }
-
+        if (!response.ok) throw new Error("Server returned status " + response.status);
         const result = await response.json();
-        document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+        document.getElementById("logOutput").textContent = JSON.stringify(result, null, 2);
+
       } catch (error) {
-        console.error("Error logging user data:", error);
-        document.getElementById("output").textContent = "Error: " + error;
+        console.error("Logging failed:", error);
+        document.getElementById("logOutput").textContent = "⚠️ Could not send data. Please try again later.";
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    // =========================
+    // Ask AI
+    // =========================
+    async function askAI() {
+      askBtn.disabled = true;
+      const query = askInput.value.trim();
+      if (!query) { 
+        alert("Please enter a question for the AI!"); 
+        askBtn.disabled = false;
+        return; 
+      }
+
+      document.getElementById("aiOutput").textContent = "⏳ Waiting for AI response...";
+
+      try {
+        const response = await fetch(`${API_BASE}/ask/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query })
+        });
+
+        if (!response.ok) throw new Error("Server returned status " + response.status);
+        const result = await response.json();
+        document.getElementById("aiOutput").textContent = result.answer || JSON.stringify(result, null, 2);
+
+      } catch (error) {
+        console.error("AI query failed:", error);
+        document.getElementById("aiOutput").textContent = "⚠️ Could not get AI response. Please try again later.";
+      } finally {
+        askBtn.disabled = false;
       }
     }
   </script>

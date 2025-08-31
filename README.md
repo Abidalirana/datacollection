@@ -63,20 +63,6 @@ llm/
 
 
 ======================================================================
-
-# Step 6: Agents
-├── agents/
-│   ├── mindset_coach_agent.py
-│   ├── trade_therapist_agent.py
-│   ├── recovery_planner_agent.py
-│   ├── risk_manager_agent.py
-│   ├── onboarding_coach_agent.py
-│   ├── propfirm_intelligence_agent.py
-│   └── orchestrator.py             # Orchestrate all agents (# Step 6)
-
-
-=================================================================================================================
-
 =================================================================================================================
 01----
 run the collctor 
@@ -115,4 +101,4 @@ PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last sad 
  python insert_dummy_data.py
 
  
-====
+=========================================================================

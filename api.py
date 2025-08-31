@@ -1,3 +1,4 @@
+#api.py
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -52,6 +53,12 @@ async def ask_ai(query: dict):
     
     response = await run_agent_with_query(user_query)
     return {"answer": response}
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 
 if __name__ == "__main__":
     import uvicorn

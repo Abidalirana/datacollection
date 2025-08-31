@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+env/
+
+# Local DB files (auto-created by Chroma / SQLite)
+*.sqlite3
+chroma_db/
+chroma.sqlite3
+
+# EDA outputs (auto-generated plots & CSVs)
+data_processing/eda_outputs/
+*.png
+*.csv
+
+# Environment variables
+.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
