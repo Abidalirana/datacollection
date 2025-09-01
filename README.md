@@ -96,6 +96,9 @@ uv run embedding_ingest.py
 06 -- run-pipeline 
 PS D:\datacollectionfundedflow> uv run python run_pipeline.py "show my last sad trades trades"
 
+or run 
+
+uv run run_pipeline.py
 
 07 
  python insert_dummy_data.py
