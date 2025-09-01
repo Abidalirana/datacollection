@@ -161,17 +161,29 @@ agent = Agent(
 
 
 # -------------------
-# Runner
+# Runner with Fallback
 # -------------------
 async def run_my_agent(user_query: str) -> str:
     try:
+        # Try RAG pipeline
         results = query_embeddings(user_query)  # optional context
         result = await Runner.run(agent, user_query)
         return result.final_output.response
+
     except InputGuardrailTripwireTriggered:
         return ". **Sorry, I can’t help with that request.**"
+
     except OutputGuardrailTripwireTriggered:
         return ". **Sorry, I can’t share that information.**"
+
+    except Exception as e:
+        # Fallback if RAG or agent fails
+        return DotFormatter.format_list([
+            "Oops, something went wrong with my data lookup 🤖",
+            "But don’t worry — I’m still here to help!",
+            "You can explore FundedFlow modules like Journals, Risk, Simulator, and more.",
+            "Which one would you like to dive into?"
+        ])
 
 
 # -------------------
