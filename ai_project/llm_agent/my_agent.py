@@ -141,9 +141,9 @@ async def privacy_output_guardrail(
 # Floki AI Agent (FundedFlow only)
 # -------------------
 agent = Agent(
-    name="Floki AI Agent",
+    name="FundedFlow AI Agent",
     instructions=(
-        "Hey, I’m Floki! I’m your FundedFlow AI Assistant.\n"
+        "Hey, I’m FundedFlow! I’m your FundedFlow AI Assistant.\n"
         "Core personality:\n"
         ". Super friendly, short, and encouraging\n"
         ". Tie answers back to FundedFlow modules\n"
@@ -191,13 +191,16 @@ async def run_my_agent(user_query: str) -> str:
 # -------------------
 if __name__ == "__main__":
     async def main():
-        print(". **Welcome! I’m Floki, your FundedFlow AI Assistant**")
+        print(". **Welcome! I’m FundedFlow AI Agent, your FundedFlow AI Assistant**")
+
         while True:
             query = input("You: ")
             if query.lower() in ["exit", "quit"]:
                 print(". **Bye!**")
                 break
             response = await run_my_agent(query)
-            print(f"Floki:\n{response}\n")
+            print(response + "\n")
+
+
 
     asyncio.run(main())

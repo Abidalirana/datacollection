@@ -4,8 +4,8 @@ fundedflow/
 
 # Step 1: Setup & DB
 │── .env                     # Store DATABASE_URL, API keys
-│── config.py                # Config variables (DB, API keys, constants)
-│── requirements.txt         # Install all Python dependencies
+│── config.py                # Config variables (DB, API keys, constants) 
+│── requirements.txt         # Install all Python dependencies  
 |---  run_pipeline           #run the all pipeline seqently 
 │── database/
 │   ├── models.py            # Define all DB tables: users, trades, emotions, journals, etc.
